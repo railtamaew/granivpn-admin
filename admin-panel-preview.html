@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GraniVPN - Админ Панель</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-header {
+            padding: 0 24px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin: 4px 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .nav-link i {
+            margin-right: 12px;
+            font-size: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 16px 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+        }
+
+        /* Content */
+        .content {
+            flex: 1;
+            padding: 24px;
+        }
+
+        /* Dashboard Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .stat-title {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .stat-change {
+            font-size: 14px;
+            color: #4caf50;
+        }
+
+        .stat-change.negative {
+            color: #f44336;
+        }
+
+        /* Tables */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: #f8f9fa;
+            padding: 16px 24px;
+            text-align: left;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table td {
+            padding: 16px 24px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-inactive {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: fixed;
+                top: 0;
+                left: -100%;
+                z-index: 1000;
+                transition: left 0.3s ease;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="logo">GraniVPN</a>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#dashboard" class="nav-link active">
+                        <i class="material-icons">dashboard</i>
+                        Дашборд
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#users" class="nav-link">
+                        <i class="material-icons">people</i>
+                        Пользователи
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#servers" class="nav-link">
+                        <i class="material-icons">dns</i>
+                        Серверы
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#payments" class="nav-link">
+                        <i class="material-icons">payment</i>
+                        Платежи
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#settings" class="nav-link">
+                        <i class="material-icons">settings</i>
+                        Настройки
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <h1>Дашборд</h1>
+                <div class="user-menu">
+                    <span>Администратор</span>
+                    <div class="user-avatar">А</div>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Всего пользователей</span>
+                            <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <i class="material-icons">people</i>
+                            </div>
+                        </div>
+                        <div class="stat-value">1,247</div>
+                        <div class="stat-change">+12% за месяц</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Активные серверы</span>
+                            <div class="stat-icon" style="background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);">
+                                <i class="material-icons">dns</i>
+                            </div>
+                        </div>
+                        <div class="stat-value">8</div>
+                        <div class="stat-change">Все работают</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Подключения за 24ч</span>
+                            <div class="stat-icon" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);">
+                                <i class="material-icons">trending_up</i>
+                            </div>
+                        </div>
+                        <div class="stat-value">15,432</div>
+                        <div class="stat-change">+8% с вчера</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-title">Доход за месяц</span>
+                            <div class="stat-icon" style="background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%);">
+                                <i class="material-icons">attach_money</i>
+                            </div>
+                        </div>
+                        <div class="stat-value">₽245,890</div>
+                        <div class="stat-change">+15% с прошлого месяца</div>
+                    </div>
+                </div>
+
+                <!-- Recent Users Table -->
+                <div class="table-container">
+                    <div class="table-header">
+                        <h3 class="table-title">Последние пользователи</h3>
+                        <a href="#users" class="btn btn-primary">
+                            <i class="material-icons">add</i>
+                            Добавить пользователя
+                        </a>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Статус</th>
+                                <th>Подписка</th>
+                                <th>Устройства</th>
+                                <th>Дата регистрации</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>user1@example.com</td>
+                                <td><span class="status-badge status-active">Активен</span></td>
+                                <td>Premium (30 дней)</td>
+                                <td>2/3</td>
+                                <td>15.12.2024</td>
+                                <td>
+                                    <button class="btn btn-secondary">Просмотр</button>
+                                    <button class="btn btn-danger">Заблокировать</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>user2@example.com</td>
+                                <td><span class="status-badge status-inactive">Заблокирован</span></td>
+                                <td>Basic (истекла)</td>
+                                <td>0/1</td>
+                                <td>10.12.2024</td>
+                                <td>
+                                    <button class="btn btn-secondary">Просмотр</button>
+                                    <button class="btn btn-primary">Разблокировать</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>user3@example.com</td>
+                                <td><span class="status-badge status-active">Активен</span></td>
+                                <td>Premium (7 дней)</td>
+                                <td>1/5</td>
+                                <td>18.12.2024</td>
+                                <td>
+                                    <button class="btn btn-secondary">Просмотр</button>
+                                    <button class="btn btn-danger">Заблокировать</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Server Status -->
+                <div class="table-container" style="margin-top: 24px;">
+                    <div class="table-header">
+                        <h3 class="table-title">Статус серверов</h3>
+                        <a href="#servers" class="btn btn-primary">
+                            <i class="material-icons">add</i>
+                            Добавить сервер
+                        </a>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Сервер</th>
+                                <th>Локация</th>
+                                <th>Статус</th>
+                                <th>Пользователи</th>
+                                <th>Нагрузка</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>NL-AMS-01</td>
+                                <td>Амстердам</td>
+                                <td><span class="status-badge status-active">Онлайн</span></td>
+                                <td>156/200</td>
+                                <td>78%</td>
+                                <td>
+                                    <button class="btn btn-secondary">Детали</button>
+                                    <button class="btn btn-danger">Перезапуск</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>DE-FRA-01</td>
+                                <td>Франкфурт</td>
+                                <td><span class="status-badge status-active">Онлайн</span></td>
+                                <td>89/200</td>
+                                <td>45%</td>
+                                <td>
+                                    <button class="btn btn-secondary">Детали</button>
+                                    <button class="btn btn-danger">Перезапуск</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>US-NYC-01</td>
+                                <td>Нью-Йорк</td>
+                                <td><span class="status-badge status-inactive">Офлайн</span></td>
+                                <td>0/200</td>
+                                <td>0%</td>
+                                <td>
+                                    <button class="btn btn-secondary">Детали</button>
+                                    <button class="btn btn-primary">Запустить</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Простая навигация
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Убираем активный класс у всех ссылок
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                
+                // Добавляем активный класс к текущей ссылке
+                this.classList.add('active');
+                
+                // Обновляем заголовок
+                const title = this.textContent.trim();
+                document.querySelector('.header h1').textContent = title;
+            });
+        });
+
+        // Анимация карточек при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.stat-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'all 0.5s ease';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 100);
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
